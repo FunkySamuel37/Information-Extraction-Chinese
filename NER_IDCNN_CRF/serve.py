@@ -22,6 +22,7 @@ with tf.Session() as sess:
     # project/logits/pred:0
     length_output = graph.get_tensor_by_name('Length:0')
     reshape_output = graph.get_tensor_by_name('project/reshape_pred:0')
+    transitions_output = graph.get_tensor_by_name('crf_loss/transitions:0')
 
     # build tensorinfo
 
@@ -32,6 +33,7 @@ with tf.Session() as sess:
 
     length_output_info = tf.saved_model.utils.build_tensor_info(length_output)
     reshape_output_info = tf.saved_model.utils.build_tensor_info(reshape_output)
+    transitions_output_info = tf.saved_model.utils.build_tensor_info(transitions_output)
 
     signature_definition = tf.saved_model.signature_def_utils.build_signature_def(
         inputs={
@@ -39,7 +41,11 @@ with tf.Session() as sess:
             'seg_input': seg_input_info,
             'dropout_input': dropout_input_info,
         },
-        outputs={'length_output': length_output_info, 'reshape_output': reshape_output_info},
+        outputs={
+            'length_output': length_output_info,
+            'reshape_output': reshape_output_info,
+            'transitions_output': transitions_output_info
+        },
         method_name=tf.saved_model.signature_constants.PREDICT_METHOD_NAME
     )
 

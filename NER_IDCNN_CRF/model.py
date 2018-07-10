@@ -310,6 +310,8 @@ class Model(object):
                 tag_indices=targets,
                 transition_params=self.trans,
                 sequence_lengths=lengths+1)
+            print(self.trans)
+            print(self.trans.name)
             return tf.reduce_mean(-log_likelihood)
 
     def create_feed_dict(self, is_train, batch):
@@ -394,6 +396,8 @@ class Model(object):
     def evaluate_line(self, sess, inputs, id_to_tag):
         trans = self.trans.eval()
         lengths, scores = self.run_step(sess, False, inputs)
+        print('scores')
+        print(scores)
         batch_paths = self.decode(scores, lengths, trans)
         tags = [id_to_tag[idx] for idx in batch_paths[0]]
         return result_to_json(inputs[0][0], tags)
