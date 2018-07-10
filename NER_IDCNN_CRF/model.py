@@ -48,7 +48,7 @@ class Model(object):
                                       name="Dropout")
 
         used = tf.sign(tf.abs(self.char_inputs))
-        length = tf.reduce_sum(used, reduction_indices=1)
+        length = tf.reduce_sum(used, reduction_indices=1, name="Length")
         self.lengths = tf.cast(length, tf.int32)
         self.batch_size = tf.shape(self.char_inputs)[0]
         self.num_steps = tf.shape(self.char_inputs)[-1]
@@ -98,7 +98,7 @@ class Model(object):
 
             # logits for tags
             self.logits = self.project_layer_idcnn(model_outputs)
-        
+
         else:
             raise KeyError
 
@@ -280,9 +280,9 @@ class Model(object):
 
                 b = tf.get_variable("b",  initializer=tf.constant(0.001, shape=[self.num_tags]))
 
-                pred = tf.nn.xw_plus_b(idcnn_outputs, W, b)
+                pred = tf.nn.xw_plus_b(idcnn_outputs, W, b, 'predication')
 
-            return tf.reshape(pred, [-1, self.num_steps, self.num_tags])
+            return tf.reshape(pred, [-1, self.num_steps, self.num_tags], name='reshape_pred')
 
     def loss_layer(self, project_logits, lengths, name=None):
         """
