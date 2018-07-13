@@ -1,5 +1,11 @@
 import tensorflow as tf
 import os
+# from collections import OrderedDict
+import pickle
+
+with open('maps.pkl', "rb") as f:
+    char_to_id, id_to_char, tag_to_id, id_to_tag = pickle.load(f)
+
 
 SAVE_PATH = './ckpt'
 MODEL_NAME = 'ner.ckpt'
@@ -10,14 +16,18 @@ checkpoint = tf.train.latest_checkpoint(SAVE_PATH)
 
 tf.reset_default_graph()
 
+config = {}
+
 with tf.Session() as sess:
+    ckpt = tf.train.get_checkpoint_state(SAVE_PATH)
     saver = tf.train.import_meta_graph(checkpoint + '.meta')
+    saver.restore(sess, ckpt.model_checkpoint_path)
     graph = tf.get_default_graph()
-    sess.run(tf.global_variables_initializer())
+    # sess.run(tf.global_variables_initializer())
     char_input = graph.get_tensor_by_name('ChatInputs:0')
     seg_input = graph.get_tensor_by_name('SegInputs:0')
     dropout_input = graph.get_tensor_by_name('Dropout:0')
-    target_input = graph.get_tensor_by_name('Targets:0')
+    # embed_input = graph.get_tensor_by_name('char_embedding/embed_input:0')
 
     # project/logits/pred:0
     length_output = graph.get_tensor_by_name('Length:0')
@@ -29,7 +39,7 @@ with tf.Session() as sess:
     char_input_info = tf.saved_model.utils.build_tensor_info(char_input)
     seg_input_info = tf.saved_model.utils.build_tensor_info(seg_input)
     dropout_input_info = tf.saved_model.utils.build_tensor_info(dropout_input)
-    target_input_info = tf.saved_model.utils.build_tensor_info(target_input)
+    # embed_input_info = tf.saved_model.utils.build_tensor_info(embed_input)
 
     length_output_info = tf.saved_model.utils.build_tensor_info(length_output)
     reshape_output_info = tf.saved_model.utils.build_tensor_info(reshape_output)
@@ -40,6 +50,7 @@ with tf.Session() as sess:
             'char_input': char_input_info,
             'seg_input': seg_input_info,
             'dropout_input': dropout_input_info,
+            # 'embed_input': embed_input_info,
         },
         outputs={
             'length_output': length_output_info,

@@ -132,14 +132,22 @@ def get_ner_result(client, line):
         'in_tensor_dtype': 'DT_FLOAT',
         'data': 1.0
     }]
+    # , {
+    #     'in_tensor_name': 'embed_input',
+    #     'in_tensor_dtype': 'DT_FLOAT',
+    #     'data':
+    # }
 
     prediction = client.predict(req_data, request_timeout=10)
     length_output = [prediction['length_output']]
     transitions_output = prediction['transitions_output']
     reshape_output = prediction['reshape_output']
-    print(prediction)
+    # print(prediction)
 
     batch_paths = decode(logits=reshape_output, lengths=length_output, matrix=transitions_output, num_tags=num_tags)
+    print('batch_paths')
+    print(batch_paths)
     tags = [id_to_tag[idx] for idx in batch_paths[0]]
+    print(id_to_tag)
     return result_to_json(inputs[0][0], tags)
     # return prediction
