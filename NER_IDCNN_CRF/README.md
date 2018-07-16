@@ -1,3 +1,24 @@
+# deploy
+
+* Export Saved Model
+```
+python3 serve.py
+```
+
+* Run Model Server
+```
+sudo apt-get install tensorflow_model_server
+export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION='python'
+# ner.ckpt is a folder export by serve.py
+tensorflow_model_server --port=9000 --model_name ner.ckpt --model_base_path /home/ubuntu/serve/ner.ckpt --saved_model_tags serve
+```
+
+* Run Client
+```
+python3 client.py # default port is 3000, may edit in client.py
+```
+
+then simple post data string to port 3000
 
 
 # Chinese Named Entity Recognition using IDCNN/biLSTM+CRF
