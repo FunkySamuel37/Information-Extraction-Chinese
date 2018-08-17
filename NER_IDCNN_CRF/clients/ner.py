@@ -90,7 +90,7 @@ def decode(logits, lengths, matrix, num_tags):
     return paths
 
 def result_to_json(string, tags):
-    item = {"string": string, "entities": []}
+    item = {"text": string, "entities": []}
     entity_name = ""
     entity_start = 0
     idx = 0

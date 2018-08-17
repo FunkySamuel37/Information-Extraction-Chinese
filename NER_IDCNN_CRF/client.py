@@ -29,12 +29,20 @@ client = ProdClient(HOST, MODEL_NAME, MODEL_VERSION)
 @app.route("/ner", methods=['POST'])
 def get_prediction():
     req_data = request.get_json()
-    raw_data = req_data['data']
-    print(raw_data)
+    # raw_data = req_data['data']
+    raw_data = req_data['input']
+    if raw_data is None:
+        return jsonify({ 'error_msg': 'wrong input, input should be string or string array'})
+
+    # prediction = None
+    # if isinstance(raw_data, list) is False:
     prediction = get_ner_result(client, raw_data)
+    # else:
+    #     prediction = map(lambda x: get_ner_result(client, x), raw_data)
+    print(raw_data)
     print(prediction)
     # ndarray cannot be converted to JSON
-    return jsonify({ 'predictions': prediction })
+    return jsonify(prediction)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=3000)
